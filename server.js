@@ -1,12 +1,17 @@
 var crypto = require('crypto');
 var request = require('request');
+var poloniex = require('./lib/poloniex-wrapper.js')();
 
+console.log(poloniex);
+return;
 request('https://poloniex.com/public?command=returnTicker', function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
         console.log(body);
      }
 });
+
+
 
 // create curl request url for both private and public apis
 
@@ -18,4 +23,4 @@ request('https://poloniex.com/public?command=returnTicker', function (error, res
 
 // create script to convert fees to get profit or loss amount
 
-// 
+//
