@@ -1,16 +1,15 @@
-var crypto = require('crypto');
-var request = require('request');
-var poloniex = require('./lib/poloniex-wrapper.js')();
+var Poloniex = require('./lib/poloniex-wrapper.js');
+var Test = require('./lib/test.js');
 
-console.log(poloniex);
+var t = Test.Poloniex;
+
+// console.log(t()._getPrivateHeaders()); // gets "test"
+
+var p = new t();
+console.log(p.testFunction()); // In Prototype
+
+
 return;
-request('https://poloniex.com/public?command=returnTicker', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-
-        console.log(body);
-     }
-});
-
 
 
 // create curl request url for both private and public apis
