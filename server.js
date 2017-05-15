@@ -1,5 +1,16 @@
-var crypto = require('crypto');
-var request = require('request');
+var Poloniex = require('./lib/poloniex-wrapper.js');
+var Test = require('./lib/test.js');
+
+var t = Test.Poloniex;
+
+// console.log(t()._getPrivateHeaders()); // gets "test"
+
+var p = new t();
+console.log(p.testFunction()); // In Prototype
+
+
+return;
+
 
 // create curl request url for both private and public apis
 
