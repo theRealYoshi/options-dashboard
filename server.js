@@ -1,5 +1,10 @@
 require('dotenv').config();
-var poloniex = require('./lib/poloniex-wrapper.js');
+var Poloniex = require('./lib/poloniex-wrapper.js');
+
+Poloniex.returnTicker(function(res, err) {
+	console.log(res);
+	console.log(err);
+});
 
 
 return;
