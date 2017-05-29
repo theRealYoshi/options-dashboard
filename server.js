@@ -4,8 +4,9 @@ var Poloniex = require('./lib/poloniex-wrapper.js');
 var express     = require('express');
 var app         = express();
 var port        = process.env.PORT || 8000;
+var passport    = require('passport');
 
-var passport    = {};
+app.set('view engine', 'ejs');
 
 require('./app/routes.js')(app, passport);
 
