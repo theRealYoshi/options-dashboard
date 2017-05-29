@@ -1,13 +1,14 @@
 require('dotenv').config();
 var Poloniex = require('./lib/poloniex-wrapper.js');
 
-var express = require('express');
-var app = express();
+var express     = require('express');
+var app         = express();
+var port        = process.env.PORT || 8000;
 
-app.get('/', function(req, res) {
-  res.send('Hello World!');
-});
+var passport    = {};
 
-app.listen(3000, function() {
-  console.log('Example app listening on port 3000!');
-});
+require('./app/routes.js')(app, passport);
+
+app.listen(port);
+
+console.log("This app is on:" + port);
