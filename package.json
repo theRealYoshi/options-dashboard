@@ -26,6 +26,7 @@
     "express": "4.15.3",
     "foreman": "2.0.0",
     "mongoose": "4.10.4",
+    "nonce": "1.0.4",
     "passport": "0.3.2",
     "request": "2.81.0"
   }
