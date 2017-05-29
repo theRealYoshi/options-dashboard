@@ -1,22 +1,14 @@
 require('dotenv').config();
 var Poloniex = require('./lib/poloniex-wrapper.js');
 
-var express = require('express');
-var app = express();
+var express     = require('express');
+var app         = express();
+var port        = process.env.PORT || 8000;
 
+var passport    = {};
 
-app.get('/', function(req, res) {
-  res.send('Hello World!');
-});
+require('./app/routes.js')(app, passport);
 
-app.listen(3000, function() {
-  console.log('Example app listening on port 3000!');
-});
+app.listen(port);
 
-// Poloniex.returnTicker(function(res, err) {
-// 	console.log(res);
-// 	console.log(err);
-// });
-// create dashboard to convert all traded coins to dollar amount
-
-// create script to convert fees to get profit or loss amount
+console.log("This app is on:" + port);
