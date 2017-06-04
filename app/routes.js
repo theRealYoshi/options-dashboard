@@ -1,5 +1,5 @@
 // app/routes.js
-var Poloniex = require('../lib/poloniex-wrapper.js');
+var Poloniex = require('../lib/js/poloniex-wrapper.js');
 
 module.exports = function(app, passport) {
 
@@ -15,10 +15,10 @@ module.exports = function(app, passport) {
     // DASHBOARD ===========================
     // =====================================
     app.get('/dashboard',  function(req, res) {
-        Poloniex.returnBalances(function(err, body){
-            res.send(body);
-        });
-        // res.render('dashboard.ejs');
+        // Poloniex.returnBalances(function(err, body){
+        //     res.send(body);
+        // });
+        res.render('dashboard.ejs');
     });
 
 };
