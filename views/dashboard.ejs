@@ -25,7 +25,15 @@
             <h1><span class="fa fa-lock"></span> Options Authentication</h1>
         </div>
         <div id="dashboard-container">
-            table
+            <ul>
+            <% Object.keys(data).forEach(function(key) { %>
+                <% if (key.indexOf("USDT") !== -1 ) { %>
+                <li><%= key %> : <%= data[key].last %></li>
+                <li> Base Volume : <%= data[key].baseVolume %></li>
+            <%     }
+               }); %>
+            </ul>
+            <!-- make a table for just usd conversions -->
         </div>
     </div>
 </div>

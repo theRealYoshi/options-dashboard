@@ -15,10 +15,14 @@ module.exports = function(app, passport) {
     // DASHBOARD ===========================
     // =====================================
     app.get('/dashboard',  function(req, res) {
-        // Poloniex.returnBalances(function(err, body){
-        //     res.send(body);
-        // });
-        res.render('dashboard.ejs');
+        Poloniex.returnTicker(function(error, data) {
+            if (error) {
+                res.render('error.ejs');
+            }
+            res.render('dashboard.ejs', {
+                data : data
+            });
+        });
     });
 
 };
