@@ -1,4 +1,8 @@
 <!-- views/dashboard -->
+<%
+    var currenciesHtml = '';
+    // make table here;
+%>
 <!doctype html>
 <html>
 <head>
@@ -22,18 +26,15 @@
 <div class="container">
     <div class="row">
         <div id="title-container">
-            <h1><span class="fa fa-lock"></span> Options Authentication</h1>
+            <h1>Currency Dashboard</h1>
         </div>
         <div id="dashboard-container">
-            <ul>
-            <% Object.keys(data).forEach(function(key) { %>
-                <% if (key.indexOf("USDT") !== -1 ) { %>
-                <li><%= key %> : <%= data[key].last %></li>
-                <li> Base Volume : <%= data[key].baseVolume %></li>
-            <%     }
-               }); %>
-            </ul>
-            <!-- make a table for just usd conversions -->
+            <div class="row">
+                <%- currenciesHtml %>
+                <!-- make a table for just usd conversions -->
+            </div>
+            <div class="row">
+            </div>
         </div>
     </div>
 </div>

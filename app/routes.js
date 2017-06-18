@@ -15,14 +15,30 @@ module.exports = function(app, passport) {
     // DASHBOARD ===========================
     // =====================================
     app.get('/dashboard',  function(req, res) {
-        Poloniex.returnTicker(function(error, data) {
-            if (error) {
-                res.render('error.ejs');
-            }
-            res.render('dashboard.ejs', {
-                data : data
-            });
+
+        var balances = new Promise(function(fulfill, reject) {
+            var res = Poloniex.getAllBalances();
+            if (!res) { reject(res); }
+            fulfill(res);
         });
+
+        balances.then(function(accountBalance) {
+            //
+            res.render('dashboard.ejs', {
+                data : accountBalance
+            });
+        })
+        .catch(function(error) {
+            res.render('error.ejs');
+        })
+
+    });
+
+    // =====================================
+    // TRADING ===========================
+    // =====================================
+    app.get('/trading',  function(req, res) {
+
     });
 
 };
