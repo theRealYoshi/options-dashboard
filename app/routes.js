@@ -22,10 +22,41 @@ module.exports = function(app, passport) {
             fulfill(res);
         });
 
-        balances.then(function(accountBalance) {
-            //
+        balances.then(function(data) {
+            var accountBalance = {};
+            var usdCurrencies = {};
+            var marginAccount = {};
+
+            Object.keys(data).forEach(function(key) {
+                var accountObj = data[key];
+                var accountKey = Object.keys(accountObj)[0];
+                switch(accountKey) {
+                    case 'usdCurrencies':
+                        usdCurrencies = accountObj[accountKey];
+                        break;
+                    case 'marginAccountSummary':
+                        marginAccount = accountObj[accountKey];
+                        break;
+                    case 'completeBalances':
+                        accountBalance = accountObj[accountKey];
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            var btcDollarValue = usdCurrencies['BTC']['last'];
+
+            Object.keys(marginAccount).forEach(function(key) {
+                if (key === 'currentMargin') { return; }
+                var value = marginAccount[key];
+                value = value * btcDollarValue;
+                marginAccount[key] = value.toFixed(2);
+            });
+
             res.render('dashboard.ejs', {
-                data : accountBalance
+                accountBalance : accountBalance,
+                marginAccountSummary : marginAccount
             });
         })
         .catch(function(error) {
