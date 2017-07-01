@@ -11,7 +11,6 @@ var configDB = require('./config/database.js');
 
 // configuration ===============================================================
 mongoose.connect(configDB.url); // connect to our database
-
 app.set('view engine', 'ejs');
 
 require('./app/routes.js')(app, passport);

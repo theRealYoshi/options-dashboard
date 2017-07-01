@@ -1,26 +1,62 @@
 <!-- views/dashboard -->
+<%
+
+    var accountBalanceHtml = '<ul>';
+    Object.keys(accountBalance).forEach(function(key) {
+        accountBalanceHtml += '<li>' + key + ':' + accountBalance[key] + '</li>';
+    });
+    accountBalanceHtml += '</ul>';
+
+    var marginAccountHtml = '<ul>';
+    Object.keys(marginAccountSummary).forEach(function(key) {
+        marginAccountHtml += '<li>' + key + ':' + marginAccountSummary[key] + '</li>';
+    });
+    marginAccountHtml += '</ul>';
+
+    var currentMarginPositionsHtml = '<ul>';
+    currentMarginPositionsHtml += '<li>Sample position</li>';
+    currentMarginPositionsHtml += '</ul>';
+
+%>
 <!doctype html>
 <html>
 <head>
     <title>User Dashboard</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap locally -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <% include ../views/partials/css %>
     <style>
-        body        { padding-top:80px; }
+        body {
+            padding-top:80px;
+        }
+
+        #title-container {
+            text-align: center;
+        }
+
+        #dashboard-container {
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-
-    <div class="jumbotron text-center">
-        <h1><span class="fa fa-lock"></span> Options Authentication</h1>
-
-        <p>Login or Register with:</p>
-
-        <a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
-        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
+    <div class="row">
+        <div id="title-container">
+            <h1>Currency Dashboard</h1>
+        </div>
+        <div id="dashboard-container">
+            <div class="row">
+                <h1> Account Balance </h1>
+                <%- accountBalanceHtml %>
+                <h1> Margin Account Summary </h1>
+                <%- marginAccountHtml %>
+                <h1> Current Margin Positions Summary </h1>
+                <%- currentMarginPositionsHtml %>
+                <!-- make a table for just usd conversions -->
+            </div>
+            <div class="row">
+            </div>
+        </div>
     </div>
-
 </div>
 </body>
 </html>
