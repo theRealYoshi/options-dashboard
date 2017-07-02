@@ -1,13 +1,10 @@
 var CronJob = require('../lib/js/cron.js').CronJob;
-var testFunction = function() {
-	console.log(Date());
-	console.log('this function is running');
-}
+var TraderBot = require('./traderBot.js');
 
-console.log('initiating cron job');
+//automatically detect crontime upon initiation and for how long its running.
 new CronJob({
-  cronTime: "* * * * * *",
-  onTick: testFunction,
+  cronTime: "* * * * *",
+  onTick: TraderBot.start,
   start: true,
   timeZone: "America/Los_Angeles"
 });
