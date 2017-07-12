@@ -26,6 +26,7 @@ module.exports = function(app, passport) {
             var accountBalance = {};
             var usdCurrencies = {};
             var marginAccount = {};
+            var currentMargin = {};
 
             Object.keys(data).forEach(function(key) {
                 var accountObj = data[key];
@@ -39,6 +40,9 @@ module.exports = function(app, passport) {
                         break;
                     case 'completeBalances':
                         accountBalance = accountObj[accountKey];
+                        break;
+                    case 'marginPositions':
+                        marginPositions = accountObj[accountKey];
                         break;
                     default:
                         break;
@@ -56,7 +60,8 @@ module.exports = function(app, passport) {
 
             res.render('dashboard.ejs', {
                 accountBalance : accountBalance,
-                marginAccountSummary : marginAccount
+                marginAccountSummary : marginAccount,
+                marginPositions : marginPositions
             });
         })
         .catch(function(error) {

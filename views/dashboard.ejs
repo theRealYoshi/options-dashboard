@@ -3,7 +3,7 @@
 
     var accountBalanceHtml = '<ul>';
     Object.keys(accountBalance).forEach(function(key) {
-        accountBalanceHtml += '<li>' + key + ':' + accountBalance[key] + '</li>';
+        accountBalanceHtml += '<li>' + key + ':' + accountBalance[key]["available"] + '</li>';
     });
     accountBalanceHtml += '</ul>';
 
@@ -14,7 +14,12 @@
     marginAccountHtml += '</ul>';
 
     var currentMarginPositionsHtml = '<ul>';
-    currentMarginPositionsHtml += '<li>Sample position</li>';
+    Object.keys(marginPositions).forEach(function(currencyPairs) {
+        currentMarginPositionsHtml += '<li>' + currencyPairs + '</li>';
+        Object.keys(marginPositions[currencyPairs]).forEach(function(currencyPairKey) {
+            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' + marginPositions[currencyPairs][currencyPairKey] + '</li>';
+        });
+    });
     currentMarginPositionsHtml += '</ul>';
 
 %>
