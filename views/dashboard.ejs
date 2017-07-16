@@ -1,26 +1,41 @@
 <!-- views/dashboard -->
 <%
 
-    var accountBalanceHtml = '<ul>';
-    Object.keys(accountBalance).forEach(function(key) {
-        accountBalanceHtml += '<li>' + key + ':' + accountBalance[key]["available"] + '</li>';
-    });
-    accountBalanceHtml += '</ul>';
-
     var marginAccountHtml = '<ul>';
-    Object.keys(marginAccountSummary).forEach(function(key) {
-        marginAccountHtml += '<li>' + key + ':' + marginAccountSummary[key] + '</li>';
+    Object.keys(marginAccount['btc']).forEach(function(key) {
+        marginAccountHtml += '<li>' + key + ':' + marginAccount['btc'][key] + '</li>';
+        marginAccountHtml += '<li>' + key + ':' + marginAccount['dollar'][key] + '</li>';
     });
     marginAccountHtml += '</ul>';
 
     var currentMarginPositionsHtml = '<ul>';
-    Object.keys(marginPositions).forEach(function(currencyPairs) {
+    Object.keys(currentMarginPositions).forEach(function(currencyPairs) {
+        var marginPositionObj = currentMarginPositions[currencyPairs];
+
         currentMarginPositionsHtml += '<li>' + currencyPairs + '</li>';
-        Object.keys(marginPositions[currencyPairs]).forEach(function(currencyPairKey) {
-            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' + marginPositions[currencyPairs][currencyPairKey] + '</li>';
+
+        Object.keys(marginPositionObj).forEach(function(currencyPairKey) {
+
+            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
+                                                   marginPositionObj[currencyPairKey] +
+                                          '</li>';
         });
     });
     currentMarginPositionsHtml += '</ul>';
+
+    var currentOpenOrdersHtml = '<ul>';
+    Object.keys(currentOpenOrders).forEach(function(key) {
+        currentOpenOrdersHtml += '<li>' + key + '</li>';
+        var currencyPairObj = currentOpenOrders[key];
+        Object.keys(currencyPairObj).forEach(function(orderNumber) {
+            currentOpenOrdersHtml += '<li>' + orderNumber + '</li>';
+            Object.keys(currencyPairObj[orderNumber]).forEach(function(orderKey) {
+                var orderValue = currencyPairObj[orderNumber][orderKey];
+                currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
+            })
+        })
+    });
+    currentOpenOrdersHtml += '</ul>';
 
 %>
 <!doctype html>
@@ -50,12 +65,12 @@
         </div>
         <div id="dashboard-container">
             <div class="row">
-                <h1> Account Balance </h1>
-                <%- accountBalanceHtml %>
-                <h1> Margin Account Summary </h1>
+                <h1> Margin Account Balance </h1>
                 <%- marginAccountHtml %>
-                <h1> Current Margin Positions Summary </h1>
+                <h1> Current Margin Positions </h1>
                 <%- currentMarginPositionsHtml %>
+                <h1> Current Open Orders </h1>
+                <%- currentOpenOrdersHtml %>
                 <!-- make a table for just usd conversions -->
             </div>
             <div class="row">
