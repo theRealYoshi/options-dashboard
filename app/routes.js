@@ -16,15 +16,14 @@ module.exports = function(app, passport) {
     // =====================================
     app.get('/dashboard',  function(req, res) {
 
-        var balances = new Promise(function(fulfill, reject) {
-            var res = Poloniex.getAllBalances();
+        var activities = new Promise(function(fulfill, reject) {
+            var res = Poloniex.getMarginActivity();
             if (!res) { reject(res); }
             fulfill(res);
         });
 
-        balances.then(function(data) {
-            var usdCurrencies = {};
-            var btcDollarValue = null;
+        activities.then(function(data) {
+            var btcDollarValue = Poloniex.getBtcDollarValue();
             var marginAccount = { 'btc' : {},
                                   'dollar' : {} };
             var currentMarginPositions = {};
@@ -34,10 +33,6 @@ module.exports = function(app, passport) {
                 var accountObj = data[key];
                 var accountKey = Object.keys(accountObj)[0];
                 switch(accountKey) {
-                    case 'usdCurrencies':
-                        usdCurrencies = accountObj[accountKey];
-                        btcDollarValue = usdCurrencies['BTC']['last'];
-                        break;
                     case 'marginAccountSummary':
                         var marginBtcAccount = accountObj[accountKey];
                         Object.keys(marginBtcAccount).forEach(function(key) {
