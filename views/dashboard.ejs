@@ -13,11 +13,15 @@
         var marginPositionObj = currentMarginPositions[currencyPairs];
 
         currentMarginPositionsHtml += '<li>' + currencyPairs + '</li>';
-
-        Object.keys(marginPositionObj).forEach(function(currencyPairKey) {
+        Object.keys(marginPositionObj['btc']).forEach(function(currencyPairKey) {
 
             currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
-                                                   marginPositionObj[currencyPairKey] +
+                                                   marginPositionObj['btc'][currencyPairKey] +
+                                          '</li>';
+        });
+        Object.keys(marginPositionObj['dollar']).forEach(function(currencyPairKey) {
+            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
+                                                   marginPositionObj['dollar'][currencyPairKey] +
                                           '</li>';
         });
     });

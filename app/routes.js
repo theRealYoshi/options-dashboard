@@ -15,6 +15,7 @@ module.exports = function(app, passport) {
     // DASHBOARD ===========================
     // =====================================
     app.get('/dashboard',  function(req, res) {
+        var btcDollarValue = Poloniex.getBtcDollarValue();
 
         var activities = new Promise(function(fulfill, reject) {
             var res = Poloniex.getMarginActivity();
@@ -23,7 +24,6 @@ module.exports = function(app, passport) {
         });
 
         activities.then(function(data) {
-            var btcDollarValue = Poloniex.getBtcDollarValue();
             var marginAccount = { 'btc' : {},
                                   'dollar' : {} };
             var currentMarginPositions = {};
@@ -51,8 +51,10 @@ module.exports = function(app, passport) {
                                 !marginPositionObj.amount <= 0) {
                                 return;
                             }
-                            currentMarginPositions[key] = marginPositionObj;
-                            // convert to dollar
+                            currentMarginPositions[key] = {
+                                'btc' : marginPositionObj,
+                                'dollar' : Poloniex.convertCurrentMarginPositionToDollar(key, marginPositionObj)
+                            };
                         });
                         break;
                     case 'currentOpenOrders':
