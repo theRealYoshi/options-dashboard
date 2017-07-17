@@ -72,10 +72,12 @@ module.exports = function(app, passport) {
                                     continue;
                                 }
                                 var orderNumber = openOrderObj.orderNumber;
-                                currentOpenOrders[key][orderNumber] = openOrderObj;
-                            }
 
-                            //convert to dollar
+                                currentOpenOrders[key][orderNumber] = {
+                                    'btc': openOrderObj,
+                                    'dollar': Poloniex.convertOpenOrderToDollar(key, openOrderObj)
+                                };
+                            }
                             // projected profit
                         });
                     default:

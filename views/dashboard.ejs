@@ -63,22 +63,24 @@
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div id="title-container">
-            <h1>Currency Dashboard</h1>
-        </div>
-        <div id="dashboard-container">
+    <div class="row" id="title-container">
+        <h1>Currency Dashboard</h1>
+    </div>
+    <div class="row" id="dashboard-container">
+        <div class="container" id="dashboard-rows">
             <div class="row">
                 <h1> Margin Account Balance </h1>
                 <%- marginAccountHtml %>
-                <h1> Current Margin Positions </h1>
-                <%- currentMarginPositionsHtml %>
-                <h1> Current Open Orders </h1>
-                <%- currentOpenOrdersHtml %>
-                <!-- make a table for just usd conversions -->
             </div>
             <div class="row">
+                <h1> Current Margin Positions </h1>
+                <%- currentMarginPositionsHtml %>
             </div>
+            <div class="row">
+                <h1> Current Open Orders </h1>
+                <%- currentOpenOrdersHtml %>
+            </div>
+            <!-- make a table for just usd conversions -->
         </div>
     </div>
 </div>
