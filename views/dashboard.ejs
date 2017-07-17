@@ -1,26 +1,69 @@
 <!-- views/dashboard -->
 <%
 
-    var accountBalanceHtml = '<ul>';
-    Object.keys(accountBalance).forEach(function(key) {
-        accountBalanceHtml += '<li>' + key + ':' + accountBalance[key]["available"] + '</li>';
+    var marginAccountHtml = '<h1> Margin Account Balance </h1>';
+    marginAccountHtml += "<ul><li>Bitcoin Value</li>";
+    Object.keys(marginAccount['btc']).forEach(function(key) {
+        marginAccountHtml += '<li>' + key + ':' + marginAccount['btc'][key] + '</li>';
     });
-    accountBalanceHtml += '</ul>';
-
-    var marginAccountHtml = '<ul>';
-    Object.keys(marginAccountSummary).forEach(function(key) {
-        marginAccountHtml += '<li>' + key + ':' + marginAccountSummary[key] + '</li>';
+    marginAccountHtml += '</ul><ul><li>Dollar Value</li>';
+    Object.keys(marginAccount['dollar']).forEach(function(key) {
+        marginAccountHtml += '<li>' + key + ':' + marginAccount['dollar'][key] + '</li>';
     });
     marginAccountHtml += '</ul>';
 
-    var currentMarginPositionsHtml = '<ul>';
-    Object.keys(marginPositions).forEach(function(currencyPairs) {
-        currentMarginPositionsHtml += '<li>' + currencyPairs + '</li>';
-        Object.keys(marginPositions[currencyPairs]).forEach(function(currencyPairKey) {
-            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' + marginPositions[currencyPairs][currencyPairKey] + '</li>';
+
+    var currentMarginPositionsHtml = '';
+    if (Object.keys(currentMarginPositions).length > 0) {
+        currentMarginPositionsHtml = '<h1> Current Margin Positions </h1>';
+
+        Object.keys(currentMarginPositions).forEach(function(currencyPairs) {
+            var marginPositionObj = currentMarginPositions[currencyPairs];
+            currentMarginPositionsHtml += '<ul>';
+            currentMarginPositionsHtml += '<li class="currency-pair-item">' + currencyPairs + '</li>';
+            currentMarginPositionsHtml += '<li>Bitcoin Value</li>';
+            Object.keys(marginPositionObj['btc']).forEach(function(currencyPairKey) {
+                currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
+                marginPositionObj['btc'][currencyPairKey] +
+                '</li>';
+            });
+            currentMarginPositionsHtml += '</ul><ul>';
+            currentMarginPositionsHtml += '<li>Dollar Value</li>';
+            Object.keys(marginPositionObj['dollar']).forEach(function(currencyPairKey) {
+                currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
+                marginPositionObj['dollar'][currencyPairKey] +
+                '</li>';
+            });
+            currentMarginPositionsHtml += '</ul>';
         });
-    });
-    currentMarginPositionsHtml += '</ul>';
+
+        currentMarginPositionsHtml += '</ul>';
+    }
+
+
+    var currentOpenOrdersHtml = '';
+    if (Object.keys(currentOpenOrders).length > 0) {
+        currentOpenOrdersHtml = '<h1>Current Open Orders</h1>';
+        currentOpenOrdersHtml += '<ul>';
+        Object.keys(currentOpenOrders).forEach(function(key) {
+            currentOpenOrdersHtml += '<li>' + key + '</li>';
+            var currencyPairObj = currentOpenOrders[key];
+            Object.keys(currencyPairObj).forEach(function(orderNumber) {
+                currentOpenOrdersHtml += '<li>' + orderNumber + '</li>';
+                currentOpenOrdersHtml += '<li>Bitcoin Value</li>';
+                Object.keys(currencyPairObj[orderNumber]['btc']).forEach(function(orderKey) {
+                    var orderValue = currencyPairObj[orderNumber]['btc'][orderKey];
+                    currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
+                })
+                currentOpenOrdersHtml += '<li>Dollar Value</li>';
+                Object.keys(currencyPairObj[orderNumber]['dollar']).forEach(function(orderKey) {
+                    var orderValue = currencyPairObj[orderNumber]['dollar'][orderKey];
+                    currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
+                })
+            })
+        });
+        currentOpenOrdersHtml += '</ul>';
+    }
 
 %>
 <!doctype html>
@@ -33,33 +76,43 @@
             padding-top:80px;
         }
 
+        ul {
+            list-style: none;
+        }
+
         #title-container {
             text-align: center;
         }
 
         #dashboard-container {
             padding: 20px;
+            text-align: left;
+        }
+
+        @media (max-width: 420px) {
+            #dashboard-container {
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div id="title-container">
-            <h1>Currency Dashboard</h1>
-        </div>
-        <div id="dashboard-container">
+    <div class="row" id="title-container">
+        <h1>Currency Dashboard</h1>
+    </div>
+    <div class="row" id="dashboard-container">
+        <div class="container" id="dashboard-rows">
             <div class="row">
-                <h1> Account Balance </h1>
-                <%- accountBalanceHtml %>
-                <h1> Margin Account Summary </h1>
                 <%- marginAccountHtml %>
-                <h1> Current Margin Positions Summary </h1>
-                <%- currentMarginPositionsHtml %>
-                <!-- make a table for just usd conversions -->
             </div>
             <div class="row">
+                <%- currentMarginPositionsHtml %>
             </div>
+            <div class="row">
+                <%- currentOpenOrdersHtml %>
+            </div>
+            <!-- make a table for just usd conversions -->
         </div>
     </div>
 </div>

@@ -15,56 +15,84 @@ module.exports = function(app, passport) {
     // DASHBOARD ===========================
     // =====================================
     app.get('/dashboard',  function(req, res) {
+        var btcDollarValue = Poloniex.getBtcDollarValue();
 
-        var balances = new Promise(function(fulfill, reject) {
-            var res = Poloniex.getAllBalances();
+        var activities = new Promise(function(fulfill, reject) {
+            var res = Poloniex.getMarginActivity();
             if (!res) { reject(res); }
             fulfill(res);
         });
 
-        balances.then(function(data) {
-            var accountBalance = {};
-            var usdCurrencies = {};
-            var marginAccount = {};
-            var currentMargin = {};
+        activities.then(function(data) {
+            var marginAccount = { 'btc' : {},
+                                  'dollar' : {} };
+            var currentMarginPositions = {};
+            var currentOpenOrders = {};
 
             Object.keys(data).forEach(function(key) {
                 var accountObj = data[key];
                 var accountKey = Object.keys(accountObj)[0];
                 switch(accountKey) {
-                    case 'usdCurrencies':
-                        usdCurrencies = accountObj[accountKey];
-                        break;
                     case 'marginAccountSummary':
-                        marginAccount = accountObj[accountKey];
+                        var marginBtcAccount = accountObj[accountKey];
+                        Object.keys(marginBtcAccount).forEach(function(key) {
+                            if (key === 'currentMargin') { return; }
+                            var value = marginBtcAccount[key];
+                            marginAccount['btc'][key] = value
+                            value = value * btcDollarValue;
+                            marginAccount['dollar'][key] = value.toFixed(2);
+                        });
                         break;
-                    case 'completeBalances':
-                        accountBalance = accountObj[accountKey];
+                    case 'currentMarginPositions':
+                        currentMarginPositionsObj = accountObj[accountKey];
+                        Object.keys(currentMarginPositionsObj).forEach(function(key) {
+                            var marginPositionObj = currentMarginPositionsObj[key];
+                            if (marginPositionObj.type === 'none' &&
+                                !marginPositionObj.amount <= 0) {
+                                return;
+                            }
+                            currentMarginPositions[key] = {
+                                'btc' : marginPositionObj,
+                                'dollar' : Poloniex.convertCurrentMarginPositionToDollar(key, marginPositionObj)
+                            };
+                        });
                         break;
-                    case 'marginPositions':
-                        marginPositions = accountObj[accountKey];
-                        break;
+                    case 'currentOpenOrders':
+                        currentOpenOrdersObj = accountObj[accountKey];
+                        Object.keys(currentOpenOrdersObj).forEach(function(key) {
+                            var currencyPairOpenOrders = currentOpenOrdersObj[key];
+                            if (currencyPairOpenOrders.length <= 0) { return; }
+                            currentOpenOrders[key] = [];
+
+                            // Each open order within currency pair
+                            for (var i = 0; i < currencyPairOpenOrders.length; i++) {
+                                var openOrderObj = currencyPairOpenOrders[i];
+                                if (!openOrderObj.orderNumber &&
+                                    !openOrderObj.amount ) {
+                                    continue;
+                                }
+                                var orderNumber = openOrderObj.orderNumber;
+
+                                currentOpenOrders[key][orderNumber] = {
+                                    'btc': openOrderObj,
+                                    'dollar': Poloniex.convertOpenOrderToDollar(key, openOrderObj)
+                                };
+                            }
+                            // projected profit
+                        });
                     default:
                         break;
                 }
             });
 
-            var btcDollarValue = usdCurrencies['BTC']['last'];
-
-            Object.keys(marginAccount).forEach(function(key) {
-                if (key === 'currentMargin') { return; }
-                var value = marginAccount[key];
-                value = value * btcDollarValue;
-                marginAccount[key] = value.toFixed(2);
-            });
-
             res.render('dashboard.ejs', {
-                accountBalance : accountBalance,
-                marginAccountSummary : marginAccount,
-                marginPositions : marginPositions
+                marginAccount : marginAccount,
+                currentMarginPositions : currentMarginPositions,
+                currentOpenOrders : currentOpenOrders
             });
         })
         .catch(function(error) {
+            console.log(error);
             res.render('error.ejs');
         })
 
