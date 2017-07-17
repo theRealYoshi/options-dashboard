@@ -1,45 +1,69 @@
 <!-- views/dashboard -->
 <%
 
-    var marginAccountHtml = '<ul>';
+    var marginAccountHtml = '<h1> Margin Account Balance </h1>';
+    marginAccountHtml += "<ul><li>Bitcoin Value</li>";
     Object.keys(marginAccount['btc']).forEach(function(key) {
         marginAccountHtml += '<li>' + key + ':' + marginAccount['btc'][key] + '</li>';
+    });
+    marginAccountHtml += '</ul><ul><li>Dollar Value</li>';
+    Object.keys(marginAccount['dollar']).forEach(function(key) {
         marginAccountHtml += '<li>' + key + ':' + marginAccount['dollar'][key] + '</li>';
     });
     marginAccountHtml += '</ul>';
 
-    var currentMarginPositionsHtml = '<ul>';
-    Object.keys(currentMarginPositions).forEach(function(currencyPairs) {
-        var marginPositionObj = currentMarginPositions[currencyPairs];
 
-        currentMarginPositionsHtml += '<li>' + currencyPairs + '</li>';
-        Object.keys(marginPositionObj['btc']).forEach(function(currencyPairKey) {
+    var currentMarginPositionsHtml = '';
+    if (Object.keys(currentMarginPositions).length > 0) {
+        currentMarginPositionsHtml = '<h1> Current Margin Positions </h1>';
 
-            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
-                                                   marginPositionObj['btc'][currencyPairKey] +
-                                          '</li>';
+        Object.keys(currentMarginPositions).forEach(function(currencyPairs) {
+            var marginPositionObj = currentMarginPositions[currencyPairs];
+            currentMarginPositionsHtml += '<ul>';
+            currentMarginPositionsHtml += '<li class="currency-pair-item">' + currencyPairs + '</li>';
+            currentMarginPositionsHtml += '<li>Bitcoin Value</li>';
+            Object.keys(marginPositionObj['btc']).forEach(function(currencyPairKey) {
+                currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
+                marginPositionObj['btc'][currencyPairKey] +
+                '</li>';
+            });
+            currentMarginPositionsHtml += '</ul><ul>';
+            currentMarginPositionsHtml += '<li>Dollar Value</li>';
+            Object.keys(marginPositionObj['dollar']).forEach(function(currencyPairKey) {
+                currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
+                marginPositionObj['dollar'][currencyPairKey] +
+                '</li>';
+            });
+            currentMarginPositionsHtml += '</ul>';
         });
-        Object.keys(marginPositionObj['dollar']).forEach(function(currencyPairKey) {
-            currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
-                                                   marginPositionObj['dollar'][currencyPairKey] +
-                                          '</li>';
-        });
-    });
-    currentMarginPositionsHtml += '</ul>';
 
-    var currentOpenOrdersHtml = '<ul>';
-    Object.keys(currentOpenOrders).forEach(function(key) {
-        currentOpenOrdersHtml += '<li>' + key + '</li>';
-        var currencyPairObj = currentOpenOrders[key];
-        Object.keys(currencyPairObj).forEach(function(orderNumber) {
-            currentOpenOrdersHtml += '<li>' + orderNumber + '</li>';
-            Object.keys(currencyPairObj[orderNumber]).forEach(function(orderKey) {
-                var orderValue = currencyPairObj[orderNumber][orderKey];
-                currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
+        currentMarginPositionsHtml += '</ul>';
+    }
+
+
+    var currentOpenOrdersHtml = '';
+    if (Object.keys(currentOpenOrders).length > 0) {
+        currentOpenOrdersHtml = '<h1>Current Open Orders</h1>';
+        currentOpenOrdersHtml += '<ul>';
+        Object.keys(currentOpenOrders).forEach(function(key) {
+            currentOpenOrdersHtml += '<li>' + key + '</li>';
+            var currencyPairObj = currentOpenOrders[key];
+            Object.keys(currencyPairObj).forEach(function(orderNumber) {
+                currentOpenOrdersHtml += '<li>' + orderNumber + '</li>';
+                currentOpenOrdersHtml += '<li>Bitcoin Value</li>';
+                Object.keys(currencyPairObj[orderNumber]['btc']).forEach(function(orderKey) {
+                    var orderValue = currencyPairObj[orderNumber]['btc'][orderKey];
+                    currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
+                })
+                currentOpenOrdersHtml += '<li>Dollar Value</li>';
+                Object.keys(currencyPairObj[orderNumber]['dollar']).forEach(function(orderKey) {
+                    var orderValue = currencyPairObj[orderNumber]['dollar'][orderKey];
+                    currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
+                })
             })
-        })
-    });
-    currentOpenOrdersHtml += '</ul>';
+        });
+        currentOpenOrdersHtml += '</ul>';
+    }
 
 %>
 <!doctype html>
@@ -52,12 +76,23 @@
             padding-top:80px;
         }
 
+        ul {
+            list-style: none;
+        }
+
         #title-container {
             text-align: center;
         }
 
         #dashboard-container {
             padding: 20px;
+            text-align: left;
+        }
+
+        @media (max-width: 420px) {
+            #dashboard-container {
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -69,15 +104,12 @@
     <div class="row" id="dashboard-container">
         <div class="container" id="dashboard-rows">
             <div class="row">
-                <h1> Margin Account Balance </h1>
                 <%- marginAccountHtml %>
             </div>
             <div class="row">
-                <h1> Current Margin Positions </h1>
                 <%- currentMarginPositionsHtml %>
             </div>
             <div class="row">
-                <h1> Current Open Orders </h1>
                 <%- currentOpenOrdersHtml %>
             </div>
             <!-- make a table for just usd conversions -->
