@@ -1,68 +1,153 @@
 <!-- views/dashboard -->
 <%
+    var currencyValues = [{'abbr' : 'btc', 'title' : 'bitcoin'},
+                          {'abbr':'dollar', 'title' : 'dollar'}];
 
-    var marginAccountHtml = '<h1> Margin Account Balance </h1>';
-    marginAccountHtml += "<ul><li>Bitcoin Value</li>";
-    Object.keys(marginAccount['btc']).forEach(function(key) {
-        marginAccountHtml += '<li>' + key + ':' + marginAccount['btc'][key] + '</li>';
-    });
-    marginAccountHtml += '</ul><ul><li>Dollar Value</li>';
-    Object.keys(marginAccount['dollar']).forEach(function(key) {
-        marginAccountHtml += '<li>' + key + ':' + marginAccount['dollar'][key] + '</li>';
-    });
-    marginAccountHtml += '</ul>';
+    var keyLabels = {
+        'totalValue' : 'Unrealized Margin Account Value',
+        'pl' : 'Current Net Profit / Loss',
+        'lendingFees' : 'Current Lending Fees',
+        'netValue' : 'Current Margin Account Value',
+        'totalBorrowedValue' : 'Total Margin Borrowed Value',
+        'basePrice' : 'Original Margin Price',
+        'liquidationPrice' : 'Liquidation Price',
+        'amount' : 'Total Borrowed Amount',
+        'total' : 'Current Value',
+        'basePrice' : 'Original Margin Price',
+        'type' : 'Margin Type',
+        'orderNumber' : 'Order Number',
+        'rate' : 'Price',
+        'startingAmount' : 'Starting Amount',
+        'date' : 'Date Activated',
+        'margin' : 'Margin Leverage'
+    };
+
+    var marginAccountHtml = '<div id="margin-account-balance-container">';
+    marginAccountHtml +=        '<h1> Margin Account Balance </h1>';
+    marginAccountHtml +=        '<div id="margin-account-balance-lists">';
+    for (var c = 0; c < currencyValues.length; c++) {
+        var currencyValueObj = currencyValues[c];
+        var abbr = currencyValueObj['abbr'];
+        var title = currencyValueObj['title'];
+        marginAccountHtml +=        '<ul class="'+ title + '">';
+        marginAccountHtml +=            '<li class="list-currency">' + title + ' Values</li>';
+        Object.keys(marginAccount[abbr]).forEach(function(key) {
+            var label = key;
+            switch(key) {
+                case 'totalValue' :
+                case 'pl' :
+                case 'lendingFees' :
+                case 'netValue' :
+                case 'totalBorrowedValue' :
+                    label = keyLabels[key];
+                    break;
+                default:
+
+                    break;
+            }
+            marginAccountHtml +=        '<label>' + label + '</label>';
+            marginAccountHtml +=        '<li>' + marginAccount[abbr][key] + '</li>';
+        });
+        marginAccountHtml +=        '</ul>';
+    }
+    marginAccountHtml +=        '</div>';
+    marginAccountHtml +=    '</div>';
 
 
     var currentMarginPositionsHtml = '';
     if (Object.keys(currentMarginPositions).length > 0) {
-        currentMarginPositionsHtml = '<h1> Current Margin Positions </h1>';
-
+        currentMarginPositionsHtml = '<div id="margin-positions-container">';
+        currentMarginPositionsHtml +=   '<h1> Current Margin Positions </h1>';
+        currentMarginPositionsHtml +=   '<ul id="current-margin-positions-currency-list">';
         Object.keys(currentMarginPositions).forEach(function(currencyPairs) {
             var marginPositionObj = currentMarginPositions[currencyPairs];
-            currentMarginPositionsHtml += '<ul>';
-            currentMarginPositionsHtml += '<li class="currency-pair-item">' + currencyPairs + '</li>';
-            currentMarginPositionsHtml += '<li>Bitcoin Value</li>';
-            Object.keys(marginPositionObj['btc']).forEach(function(currencyPairKey) {
-                currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
-                marginPositionObj['btc'][currencyPairKey] +
-                '</li>';
-            });
-            currentMarginPositionsHtml += '</ul><ul>';
-            currentMarginPositionsHtml += '<li>Dollar Value</li>';
-            Object.keys(marginPositionObj['dollar']).forEach(function(currencyPairKey) {
-                currentMarginPositionsHtml += '<li>' + currencyPairKey + ' : ' +
-                marginPositionObj['dollar'][currencyPairKey] +
-                '</li>';
-            });
-            currentMarginPositionsHtml += '</ul>';
-        });
+            currentMarginPositionsHtml +=   '<label>' + currencyPairs + '</label>';
+            currentMarginPositionsHtml +=   '<li class="currency-pair-item">';
+            for (var c = 0; c < currencyValues.length; c++) {
+                var currencyValueObj = currencyValues[c];
+                var abbr = currencyValueObj['abbr'];
+                var title = currencyValueObj['title'];
+                currentMarginPositionsHtml +=   '<ul class="'+ title + '">';
+                currentMarginPositionsHtml +=       '<li class="list-currency">' + title + ' Values</li>';
+                Object.keys(marginPositionObj[abbr]).forEach(function(key) {
+                    var label = key;
+                    switch(key) {
+                        case 'type':
+                        case 'amount':
+                        case 'basePrice':
+                        case 'liquidationPrice':
+                        case 'lendingFees':
+                        case 'pl':
+                        case 'total':
+                            label = keyLabels[key];
+                            break;
+                        default:
+                            break;
+                    }
+                    currentMarginPositionsHtml +=   '<label>' + label + '</label>';
+                    currentMarginPositionsHtml +=   '<li>' + marginPositionObj[abbr][key] + '</li>';
+                });
+                currentMarginPositionsHtml +=   '</ul>';
+            }
+            currentMarginPositionsHtml +=   '</li>';
+        }); // currency pair
+        currentMarginPositionsHtml +=   '</ul>';
+        currentMarginPositionsHtml += '</div>';
 
-        currentMarginPositionsHtml += '</ul>';
+        // add close positions
+        // add margin percentage
     }
 
 
     var currentOpenOrdersHtml = '';
     if (Object.keys(currentOpenOrders).length > 0) {
-        currentOpenOrdersHtml = '<h1>Current Open Orders</h1>';
-        currentOpenOrdersHtml += '<ul>';
-        Object.keys(currentOpenOrders).forEach(function(key) {
-            currentOpenOrdersHtml += '<li>' + key + '</li>';
-            var currencyPairObj = currentOpenOrders[key];
+        currentOpenOrdersHtml = '<div id="current-open-order-container">';
+        currentOpenOrdersHtml += '<h1>Current Open Orders</h1>';
+        currentOpenOrdersHtml +=    '<ul id="open-orders-list">';
+        Object.keys(currentOpenOrders).forEach(function(currencyPair) {
+            var currencyPairObj = currentOpenOrders[currencyPair];
+            currentOpenOrdersHtml += '<li>' + currencyPair + '</li>';
+            currentOpenOrdersHtml +=    '<ul class="order-number-list">';
             Object.keys(currencyPairObj).forEach(function(orderNumber) {
-                currentOpenOrdersHtml += '<li>' + orderNumber + '</li>';
-                currentOpenOrdersHtml += '<li>Bitcoin Value</li>';
-                Object.keys(currencyPairObj[orderNumber]['btc']).forEach(function(orderKey) {
-                    var orderValue = currencyPairObj[orderNumber]['btc'][orderKey];
-                    currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
-                })
-                currentOpenOrdersHtml += '<li>Dollar Value</li>';
-                Object.keys(currencyPairObj[orderNumber]['dollar']).forEach(function(orderKey) {
-                    var orderValue = currencyPairObj[orderNumber]['dollar'][orderKey];
-                    currentOpenOrdersHtml += '<li>' + orderKey + ' : ' + orderValue + '</li>';
-                })
+                currentOpenOrdersHtml +=    '<label>' + orderNumber + '</label>';
+                currentOpenOrdersHtml +=    '<li>';
+                for (var c = 0; c < currencyValues.length; c++) {
+                    var currencyValueObj = currencyValues[c];
+                    var abbr = currencyValueObj['abbr'];
+                    var title = currencyValueObj['title'];
+                    currentOpenOrdersHtml += '<ul class="'+ title + '">';
+                    currentOpenOrdersHtml +=    '<li class="list-currency">' + title + ' Values</li>';
+                    Object.keys(currencyPairObj[orderNumber][abbr]).forEach(function(key) {
+                        var orderValue = currencyPairObj[orderNumber][abbr][key];
+                        var label = key;
+                        switch(key) {
+                            case 'orderNumber':
+                            case 'type':
+                            case 'rate':
+                            case 'startingAmount':
+                            case 'amount':
+                            case 'total' :
+                            case 'date' :
+                            case 'margin' :
+                                label = keyLabels[key];
+                                break;
+                            default:
+                                break;
+
+                        }
+                        currentOpenOrdersHtml += '<label>' + label + '</label>';
+                        currentOpenOrdersHtml += '<li>' + orderValue + '</li>';
+                    });
+                    currentOpenOrdersHtml += '</ul>';
+                }
+                currentOpenOrdersHtml +=    '</li>';
             })
+            currentOpenOrdersHtml +=    '<ul>';
         });
-        currentOpenOrdersHtml += '</ul>';
+        currentOpenOrdersHtml +=    '</ul>';
+        currentOpenOrdersHtml += '</div>';
+        // add close or cancel order
+        // add projected profit or loss if sold
     }
 
 %>
@@ -85,21 +170,64 @@
         }
 
         #dashboard-container {
-            padding: 20px;
             text-align: left;
         }
 
+        #margin-account-balance-container {
+
+        }
+
+        #margin-account-balance-lists {
+            width: 100%;
+        }
+
+        #margin-account-balance-lists ul {
+
+        }
+
+        #margin-positions-container {
+
+        }
+
+        #current-margin-positions-currency-list {
+            padding: 0px;
+        }
+
+        #current-open-order-container {
+
+        }
+
+        ul.bitcoin,
+        ul.dollar {
+            padding: 0px;
+            float: left;
+            min-width: 400px;
+        }
+
+        ul#open-orders-list,
+        ul.order-number-list {
+            padding: 0px;
+        }
+
+
+
         @media (max-width: 420px) {
             #dashboard-container {
+                padding: 10px;
                 text-align: center;
             }
+
+            #margin-account-balance-lists ul {
+                min-width: none;
+            }
+
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="row" id="title-container">
-        <h1>Currency Dashboard</h1>
+        <h1>Margin Dashboard</h1>
     </div>
     <div class="row" id="dashboard-container">
         <div class="container" id="dashboard-rows">
@@ -112,7 +240,6 @@
             <div class="row">
                 <%- currentOpenOrdersHtml %>
             </div>
-            <!-- make a table for just usd conversions -->
         </div>
     </div>
 </div>
