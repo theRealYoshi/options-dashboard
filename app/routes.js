@@ -53,7 +53,7 @@ module.exports = function(app, passport) {
                             }
                             currentMarginPositions[key] = {
                                 'btc' : marginPositionObj,
-                                'dollar' : Poloniex.convertCurrentMarginPositionToDollar(key, marginPositionObj)
+                                'dollar' : Poloniex.convertToDollar(key, marginPositionObj)
                             };
                         });
                         break;
@@ -75,7 +75,7 @@ module.exports = function(app, passport) {
 
                                 currentOpenOrders[key][orderNumber] = {
                                     'btc': openOrderObj,
-                                    'dollar': Poloniex.convertOpenOrderToDollar(key, openOrderObj)
+                                    'dollar' : Poloniex.convertToDollar(key, openOrderObj)
                                 };
                             }
                             // projected profit
@@ -92,8 +92,9 @@ module.exports = function(app, passport) {
             });
         })
         .catch(function(error) {
-            console.log(error);
-            res.render('error.ejs');
+            res.render('error.ejs', {
+                errorMsg : error
+            });
         })
 
     });
