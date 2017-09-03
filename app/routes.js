@@ -24,8 +24,7 @@ module.exports = function(app, passport) {
         });
 
         activities.then(function(data) {
-            var marginAccount = { 'btc' : {},
-                                  'dollar' : {} };
+            var marginAccount = {};
             var currentMarginPositions = {};
             var currentOpenOrders = {};
 
@@ -38,9 +37,12 @@ module.exports = function(app, passport) {
                         Object.keys(marginBtcAccount).forEach(function(key) {
                             if (key === 'currentMargin') { return; }
                             var value = marginBtcAccount[key];
-                            marginAccount['btc'][key] = value
+                            if (!marginAccount[key]) {
+                                marginAccount[key] = {};
+                            }
+                            marginAccount[key]['btc'] = value;
                             value = value * btcDollarValue;
-                            marginAccount['dollar'][key] = value.toFixed(2);
+                            marginAccount[key]['dollar'] = value.toFixed(2);
                         });
                         break;
                     case 'currentMarginPositions':
@@ -72,11 +74,11 @@ module.exports = function(app, passport) {
                                     continue;
                                 }
                                 var orderNumber = openOrderObj.orderNumber;
-
                                 currentOpenOrders[key][orderNumber] = {
                                     'btc': openOrderObj,
                                     'dollar' : Poloniex.convertToDollar(key, openOrderObj)
                                 };
+                                // add cancel order button
                             }
                             // projected profit
                         });
@@ -84,7 +86,6 @@ module.exports = function(app, passport) {
                         break;
                 }
             });
-
             res.render('dashboard.ejs', {
                 marginAccount : marginAccount,
                 currentMarginPositions : currentMarginPositions,
@@ -92,6 +93,7 @@ module.exports = function(app, passport) {
             });
         })
         .catch(function(error) {
+            console.log(error);
             res.render('error.ejs', {
                 errorMsg : error
             });
@@ -106,4 +108,32 @@ module.exports = function(app, passport) {
 
     });
 
+    // =====================================
+    // AJAX ===========================
+    // =====================================
+
+    app.get('/ajax/closePosition', function(req, res){
+        var currencyA = req.body.currencyPair.split("_")[0];
+        var currencyB = req.body.currencyPair.split("_")[1];
+        Poloniex.closeMarginPosition(currencyA, currencyB, function(error, data){
+            if (!data.success) {
+                res.status(500).send({error : error});
+            } else {
+                res.send(data);
+            }
+        })
+    });
+
+    app.post('/ajax/cancelOrder', function(req, res){
+        var orderNumber = req.body.orderNumber;
+        var currencyA = req.body.currencyPair.split("_")[0];
+        var currencyB = req.body.currencyPair.split("_")[1];
+        Poloniex.cancelOrder(currencyA, currencyB, orderNumber, function(error, data) {
+            if (!data.success) {
+                res.status(500).send({error : error});
+            } else {
+                res.send(data);
+            }
+        });
+    });
 };

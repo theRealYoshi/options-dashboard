@@ -22,42 +22,50 @@
         'margin' : 'Margin Leverage'
     };
 
-    var marginAccountHtml = '<div id="margin-account-balance-container">';
-    marginAccountHtml +=        '<h1> Margin Account Balance </h1>';
-    marginAccountHtml +=        '<div id="margin-account-balance-lists">';
-    for (var c = 0; c < currencyValues.length; c++) {
-        var currencyValueObj = currencyValues[c];
-        var abbr = currencyValueObj['abbr'];
-        var title = currencyValueObj['title'];
-        marginAccountHtml +=        '<ul class="'+ title + '">';
-        marginAccountHtml +=            '<li class="list-currency">' + title + ' Values</li>';
-        Object.keys(marginAccount[abbr]).forEach(function(key) {
-            var label = key;
-            switch(key) {
-                case 'totalValue' :
-                case 'pl' :
-                case 'lendingFees' :
-                case 'netValue' :
-                case 'totalBorrowedValue' :
-                    label = keyLabels[key];
-                    break;
-                default:
-
-                    break;
-            }
-            marginAccountHtml +=        '<label>' + label + '</label>';
-            marginAccountHtml +=        '<li>' + marginAccount[abbr][key] + '</li>';
-        });
-        marginAccountHtml +=        '</ul>';
-    }
+    var marginAccountHtml = '<div id="margin-account-balance-container" class="container">';
+    marginAccountHtml +=        '<div class="refresh-item row col-xs-12">';
+    marginAccountHtml +=            '<label class="dashboard-item-title">MARGIN ACCOUNT BALANCE</label>';
+    marginAccountHtml +=            '<span id="refresh-button" class="glyphicon glyphicon-refresh"></span>';
+    marginAccountHtml +=        '</div>';
+    marginAccountHtml +=        '<div class="row col-xs-12">';
+    marginAccountHtml +=            '<table class="margin-table" id="margin-account-balance-table">';
+    marginAccountHtml +=                '<tr class="margin-table-header-row">';
+    marginAccountHtml +=                    '<th></th>';
+    marginAccountHtml +=                    '<th>Bitcoin</th>';
+    marginAccountHtml +=                    '<th>Dollar</th>';
+    marginAccountHtml +=                '</tr><tr class="spacer"></tr>';
+    Object.keys(marginAccount).forEach(function(key) {
+        var label = key;
+        switch(key) {
+            case 'totalValue' :
+            case 'pl' :
+            case 'lendingFees' :
+            case 'netValue' :
+            case 'totalBorrowedValue' :
+                label = keyLabels[key];
+                break;
+            default:
+                break;
+        }
+        marginAccountHtml +=            '<tr class="margin-table-row">';
+        marginAccountHtml +=                '<td>' + label + '</td>';
+        for (var c = 0; c < currencyValues.length; c++) {
+            var currencyValueObj = currencyValues[c];
+            var abbr = currencyValueObj['abbr'];
+            marginAccountHtml +=            '<td>' + marginAccount[key][abbr] + '</td>';
+        }
+        marginAccountHtml +=            '</tr>';
+    });
+    marginAccountHtml +=            '</table>';
     marginAccountHtml +=        '</div>';
     marginAccountHtml +=    '</div>';
 
 
     var currentMarginPositionsHtml = '';
     if (Object.keys(currentMarginPositions).length > 0) {
-        currentMarginPositionsHtml = '<div id="margin-positions-container">';
-        currentMarginPositionsHtml +=   '<h1> Current Margin Positions </h1>';
+        currentMarginPositionsHtml = '<li class="dashboard-item col-xs-12" id="dashboard-margin-position">';
+        currentMarginPositionsHtml += '<div id="margin-positions-container">';
+        currentMarginPositionsHtml +=   '<label class="dashboard-item-title"> Current Margin Positions </label>';
         currentMarginPositionsHtml +=   '<ul id="current-margin-positions-currency-list">';
         Object.keys(currentMarginPositions).forEach(function(currencyPairs) {
             var marginPositionObj = currentMarginPositions[currencyPairs];
@@ -67,7 +75,7 @@
                 var currencyValueObj = currencyValues[c];
                 var abbr = currencyValueObj['abbr'];
                 var title = currencyValueObj['title'];
-                currentMarginPositionsHtml +=   '<ul class="'+ title + '">';
+                currentMarginPositionsHtml +=   '<ul class="'+ title + ' col-xs-12 col-sm-4">';
                 currentMarginPositionsHtml +=       '<li class="list-currency">' + title + ' Values</li>';
                 Object.keys(marginPositionObj[abbr]).forEach(function(key) {
                     var label = key;
@@ -89,20 +97,25 @@
                 });
                 currentMarginPositionsHtml +=   '</ul>';
             }
+            // add currency pair object into jquery
+            currentMarginPositionsHtml +=       '<div class="close-position-item col-xs-12 col-sm-4">';
+            currentMarginPositionsHtml +=           '<button type="button" class="btn btn-secondary close-position-button>';
+            currentMarginPositionsHtml +=               'Close Position</button>';
+            currentMarginPositionsHtml +=       '</div>';
             currentMarginPositionsHtml +=   '</li>';
         }); // currency pair
         currentMarginPositionsHtml +=   '</ul>';
         currentMarginPositionsHtml += '</div>';
-
-        // add close positions
+        currentMarginPositionsHtml += '</li>';
         // add margin percentage
     }
 
 
     var currentOpenOrdersHtml = '';
     if (Object.keys(currentOpenOrders).length > 0) {
-        currentOpenOrdersHtml = '<div id="current-open-order-container">';
-        currentOpenOrdersHtml += '<h1>Current Open Orders</h1>';
+        currentOpenOrdersHtml = '<li class="dashboard-item col-xs-12" id="dashboard-open-order">';
+        currentOpenOrdersHtml +=    '<div id="current-open-order-container">';
+        currentOpenOrdersHtml +=        '<label class="dashboard-item-title">Current Open Orders</label>';
         currentOpenOrdersHtml +=    '<ul id="open-orders-list">';
         Object.keys(currentOpenOrders).forEach(function(currencyPair) {
             var currencyPairObj = currentOpenOrders[currencyPair];
@@ -115,7 +128,7 @@
                     var currencyValueObj = currencyValues[c];
                     var abbr = currencyValueObj['abbr'];
                     var title = currencyValueObj['title'];
-                    currentOpenOrdersHtml += '<ul class="'+ title + '">';
+                    currentOpenOrdersHtml += '<ul class="'+ title + ' col-xs-12 col-sm-4">';
                     currentOpenOrdersHtml +=    '<li class="list-currency">' + title + ' Values</li>';
                     Object.keys(currencyPairObj[orderNumber][abbr]).forEach(function(key) {
                         var orderValue = currencyPairObj[orderNumber][abbr][key];
@@ -140,13 +153,22 @@
                     });
                     currentOpenOrdersHtml += '</ul>';
                 }
+                /*
+                * Cancel Order Button
+                */
+                currentOpenOrdersHtml +=    '<div class="cancel-order-item col-xs-12 col-sm-4">';
+                currentOpenOrdersHtml +=        '<button type="button" class="btn btn-danger cancel-order-button"';
+                currentOpenOrdersHtml +=            'data-order-number="'+ orderNumber + '" ';
+                currentOpenOrdersHtml +=            'data-currency-pair="' + currencyPair + '">';
+                currentOpenOrdersHtml +=            'Cancel Order</button>';
+                currentOpenOrdersHtml +=    '</div>';
                 currentOpenOrdersHtml +=    '</li>';
             })
             currentOpenOrdersHtml +=    '<ul>';
         });
         currentOpenOrdersHtml +=    '</ul>';
         currentOpenOrdersHtml += '</div>';
-        // add close or cancel order
+        currentOpenOrdersHtml += '</li>';
         // add projected profit or loss if sold
     }
 
@@ -157,51 +179,109 @@
     <title>User Dashboard</title>
     <% include ../views/partials/css %>
     <style>
-        body {
-            padding-top:80px;
-        }
 
         ul {
             list-style: none;
         }
 
-        #title-container {
-            text-align: center;
+        th {
+            text-overflow: ellipsis;
+            font-weight: 400;
         }
 
-        #dashboard-container {
+        #title-container {
+            height: 60px;
+            width: 100%;
+            background-color: #f7f7f7;
+        }
+
+        #page-title-container {
+            height: 100%;
+            margin-left: 20px;
             text-align: left;
         }
 
-        #margin-account-balance-container {
-
+        #page-title-container span {
+            vertical-align: middle;
+            font-weight: 300;
+            font-size: 40px;
         }
 
-        #margin-account-balance-lists {
+        #dashboard-container {
+            height: 100%;
+            margin-top: 50px;
+        }
+
+        #dashboard-list {
+            padding: 0;
+        }
+
+        .dashboard-item {
+            min-height: 300px;
+            margin-top: 50px;
+            border: 1px solid #ebebeb;
+        }
+
+        .dashboard-item-title {
+            font-size: 20px;
+            font-weight: 300;
             width: 100%;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ebebeb;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
         }
 
-        #margin-account-balance-lists ul {
-
+        #margin-account-balance-container,
+        #margin-positions-container,
+        #current-open-order-container {
+            width: 90%;
+            margin-left: 5%;
+            margin-right: 5%;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            min-height: 300px;
         }
 
-        #margin-positions-container {
+        #margin-account-balance-table {
+            width: 90%;
+            margin-left: 5%;
+            margin-right: 5%;
+        }
 
+        .margin-table-header-row {
+            height: 50px;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        tr.spacer {
+            height: 20px;
+        }
+
+        .margin-table-row {
+            height: 30px;
         }
 
         #current-margin-positions-currency-list {
             padding: 0px;
         }
 
-        #current-open-order-container {
-
+        #refresh-button {
+            position: absolute;
+            top: 0px;
+            right: 16px;
+            color: #ebebeb;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        #refresh-button:hover {
+            color: black;
         }
 
-        ul.bitcoin,
-        ul.dollar {
-            padding: 0px;
-            float: left;
-            min-width: 400px;
+        .cancel-order-button {
+            width: 100%;
+            max-width: 300px;
+            margin: 50px auto 0 auto;
         }
 
         ul#open-orders-list,
@@ -209,16 +289,14 @@
             padding: 0px;
         }
 
-
-
         @media (max-width: 420px) {
             #dashboard-container {
                 padding: 10px;
                 text-align: center;
             }
 
-            #margin-account-balance-lists ul {
-                min-width: none;
+            #page-title-container span {
+                font-size: 30px;
             }
 
         }
@@ -226,22 +304,71 @@
 </head>
 <body>
 <div class="container">
-    <div class="row" id="title-container">
-        <h1>Margin Dashboard</h1>
-    </div>
-    <div class="row" id="dashboard-container">
-        <div class="container" id="dashboard-rows">
-            <div class="row">
-                <%- marginAccountHtml %>
-            </div>
-            <div class="row">
-                <%- currentMarginPositionsHtml %>
-            </div>
-            <div class="row">
-                <%- currentOpenOrdersHtml %>
-            </div>
+    <!-- Add nav bar -->
+    <div id="title-container">
+        <div id="page-title-container">
+            <span>MARGIN DASHBOARD</span>
         </div>
+    </div>
+    <div id="dashboard-container">
+        <ul id="dashboard-list">
+            <li class="dashboard-item col-xs-12" id="dashboard-margin-account">
+                <%- marginAccountHtml %>
+            </li>
+            <% if (Object.keys(currentMarginPositions).length > 0) { %>
+                <%- currentMarginPositionsHtml %>
+            <% } %>
+            <% if (Object.keys(currentOpenOrders).length > 0) { %>
+                <%- currentOpenOrdersHtml %>
+            <% } %>
+        </ul>
     </div>
 </div>
 </body>
 </html>
+<script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+
+    $("#refresh-button").on("click", function() {
+        location.reload();
+    })
+
+    // cancel order ajax
+    $(".cancel-order-button").on("click", function(){
+        var $el = $(this);
+        var data = {
+            "orderNumber" : $el.data("order-number"),
+            "currencyPair": $el.data("currency-pair")
+        };
+        $.ajax({
+            method: "POST",
+            url: "/ajax/cancelOrder",
+            data: data
+        })
+        .then(function(data){
+            location.reload();
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+    })
+
+    $(".close-position-button").on("click", function(){
+        var $el = $(this);
+        var data = {
+            "currencyPair": $el.data("currency-pair")
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/ajax/closePosition",
+            data: data
+        })
+        .then(function(data){
+            location.reload();
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+    })
+</script>
